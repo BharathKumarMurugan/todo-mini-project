@@ -3,34 +3,20 @@ import "dotenv/config";
 import express, { request, response } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import amqplib from "amqplib";
+
 import { logger } from "./utils/logger.js";
 
 const app = express();
 
 const PORT = process.env.API_PORT || 3000;
 
-let channel;
+
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true })); // parse URL-encoded bodies
 app.use(bodyParser.json());
 app.use(express.json());
 
-/**
- * Connects to RabbitMQ server and sets up the channel
- */
-async function connectToRabbitMQ() {
-  try {
-    const conn = await amqplib.connect(process.env.QUEUE_URL);
-    channel = await conn.createChannel();
-    await channel.assertQueue(process.env.QUEUE_NAME, { durable: false });
-    logger.info("Connected to Queue server");
-  } catch (err) {
-    logger.error("Failed to connect to Queue server: ", err);
-    process.exit(1);
-  }
-}
 
 /**
  * Middleware to handle logs for every API request
