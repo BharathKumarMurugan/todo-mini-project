@@ -5,6 +5,7 @@
 import { publishToQueue } from "../utils/queue.js";
 import logger from "../utils/logger.js";
 import { v4 as uuidv4 } from "uuid";
+import todoModel from "../models/Todo.js";
 
 export const queueNewTodo = async (taskData, user) => {
   const message = {
