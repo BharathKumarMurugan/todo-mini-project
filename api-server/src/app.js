@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import logger from "./utils/logger.js";
+import todoRoutes from "./routes/todoRoutes.js";
+import requestLogger from "./middlewares/requestLogger.js";
 
 const app = express();
 
@@ -10,21 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // parse URL-encoded bodies
 app.use(bodyParser.json());
 app.use(express.json());
 
-/**
- * Middleware to handle logs for every API request
- * Logs the request method, URL, IP address, status code,response time and user agent
- */
-app.use((req, res, next) => {
-  res.on("finish", () => {
-    logger.info(`API Request: ${req.method} ${req.originalUrl}`, {
-      ip: req.ip,
-      statusCode: res.statusCode,
-      responseTimeMs: res.get("X-Response-Time"),
-      userAgent: req.get("User-Agent"),
-    });
-  });
-  next();
-});
+app.use(requestLogger);
 
 app.get("/", (req, res) => {
   const message = {
@@ -41,5 +28,7 @@ app.get("/health", (req, res) => {
   };
   res.status(200).json(message);
 });
+
+app.use("/api/todos", todoRoutes);
 
 export default app;
