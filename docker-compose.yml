@@ -1,0 +1,33 @@
+services:
+  api-server:
+    build: ./api-server
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+      - mongodb
+    restart: always
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672" # Management UI
+      - "5672:5672" # default RabbitMQ port
+
+  mongodb:
+    image: "mongo:latest"
+    command: ["mongod", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+networks:
+  default:
+    driver: bridge
