@@ -2,8 +2,8 @@
  * Connects to RabbitMQ server and publishes messages to the queue
  */
 
-import { publishToQueue } from "../utils/queue";
-import { logger } from "../utils/logger";
+import { publishToQueue } from "../utils/queue.js";
+import logger from "../utils/logger.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const queueNewTodo = async (taskData, user) => {

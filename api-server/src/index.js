@@ -1,7 +1,7 @@
 import "dotenv/config";
 import app from "./app.js";
 import { connectToRabbitMQ } from "./utils/queue.js";
-import { logger } from "./utils/logger.js";
+import logger from "./utils/logger.js";
 import { connectToDB } from "./utils/db.js";
 
 const PORT = process.env.API_PORT || 3000;

@@ -1,5 +1,5 @@
 import amqplib from "amqplib";
-import logger from "./logger";
+import logger from "./logger.js";
 
 let channel;
 

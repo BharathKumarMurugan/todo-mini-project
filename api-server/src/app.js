@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import logger from "./utils/logger.js";
 
 const app = express();
 
@@ -41,4 +42,4 @@ app.get("/health", (req, res) => {
   res.status(200).json(message);
 });
 
-module.exports = app;
+export default app;

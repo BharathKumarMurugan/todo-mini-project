@@ -3,7 +3,7 @@ import winston from "winston";
 const { createLogger, format, transports } = winston;
 const { combine, timestamp } = format;
 
-export const logger = createLogger({
+const logger = createLogger({
   level: "info",
   format: combine(timestamp(), format.json()),
   transports: [
@@ -19,3 +19,5 @@ if (process.env.NODE_ENV !== "production") {
     })
   );
 }
+
+export default logger;
