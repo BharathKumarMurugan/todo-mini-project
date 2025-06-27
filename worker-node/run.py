@@ -1,15 +1,15 @@
-import os  # importing modules
+import os
 import signal
 import threading
 import time
 
 from app.logger import logger
 from app.worker import create_app, start_consumer_thread
-from dotenv import load_dotenv  # load env variables
+from dotenv import load_dotenv
 
 load_dotenv()
 
-PORT = int(os.getenv("WORKER_NODE_PORT", 3000))
+PORT = int(os.getenv("WORKER_NODE_PORT", 3001))
 
 if __name__ == "__main__":
     app = create_app()
