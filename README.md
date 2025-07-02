@@ -96,11 +96,80 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
 ### `POST /api/todos`
 
 ```json
-{
-  "message": "Task submitted successfully and is being processed.",
-  "taskId": "abc123",
-  "status": "queued"
-}
+[
+  {
+    "action": "create",
+    "task": {
+      "title": "Task 1",
+      "description": "This is the first task",
+      "dueDate": "2025-07-02T04:23:44.370Z",
+      "status": "pending"
+    },
+    "user": {
+      "userId": "user1",
+      "email": "user1@test.com"
+    },
+    "metadata": {
+      "messageId": "uuid-user1-123",
+      "createdAt": "2025-06-30T04:23:44.370Z",
+      "source": "api-server"
+    }
+  },
+  {
+    "action": "create",
+    "task": {
+      "title": "Task 1",
+      "description": "This is the first task",
+      "dueDate": "2025-07-02T04:23:44.370Z",
+      "status": "pending"
+    },
+    "user": {
+      "userId": "user2",
+      "email": "user2@test.com"
+    },
+    "metadata": {
+      "messageId": "uuid-user2-123",
+      "createdAt": "2025-06-30T04:23:45.370Z",
+      "source": "api-server"
+    }
+  },
+  {
+    "action": "create",
+    "task": {
+      "title": "Task 2",
+      "description": "This is the second task",
+      "dueDate": "2025-07-03T04:23:44.370Z",
+      "status": "pending"
+    },
+    "user": {
+      "userId": "user1",
+      "email": "user1@test.com"
+    },
+    "metadata": {
+      "messageId": "uuid-user1-123",
+      "createdAt": "2025-06-30T04:23:46.370Z",
+      "source": "api-server"
+    }
+  },
+  {
+    "action": "create",
+    "task": {
+      "title": "Task 1",
+      "description": "This is the first task",
+      "dueDate": "2025-07-03T04:23:44.370Z",
+      "status": "pending"
+    },
+    "user": {
+      "userId": "user3",
+      "email": "user3@test.com"
+    },
+    "metadata": {
+      "messageId": "uuid-user3-123",
+      "createdAt": "2025-06-30T04:24:46.370Z",
+      "source": "api-server"
+    }
+  }
+]
 ```
 
 ### `GET /api/todos/:id`
@@ -112,6 +181,58 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
   "description": "Milk, bread, eggs",
   "dueDate": "2025-06-06T18:00:00Z",
   "status": "pending"
+}
+```
+
+### `PUT /api/todos/:id`
+```json
+[
+  {
+    "action": "update",
+    "_id": "6864da8eff18e043b6a9d2b5",
+    "task": {
+      "title": "Task 1",
+      "description": "This is the first task",
+      "dueDate": "2025-07-03T04:23:44.370Z",
+      "status": "completed"
+    },
+    "user": {
+      "userId": "user1",
+      "email": "user1@test.com"
+    },
+    "metadata": {
+      "messageId": "uuid-user1-123",
+      "createdAt": "2025-06-30T04:24:46.370Z",
+      "source": "api-server"
+    }
+  },
+  {
+    "action": "update",
+    "_id": "6864dad6ff18e043b6a9d2b8",
+    "task": {
+      "title": "Task 1 of user 3",
+      "description": "This is the first task of the third user",
+      "dueDate": "2025-07-03T04:23:44.370Z",
+      "status": "pending"
+    },
+    "user": {
+      "userId": "user1",
+      "email": "user1@test.com"
+    },
+    "metadata": {
+      "messageId": "uuid-user1-123",
+      "createdAt": "2025-06-30T04:24:46.370Z",
+      "source": "api-server"
+    }
+  }
+]
+```
+
+### `DELETE /api/todos/:id`
+```json
+{
+  "action": "delete",
+  "_id": "6864dabfff18e043b6a9d2b6"
 }
 ```
 
