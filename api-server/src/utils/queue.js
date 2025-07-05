@@ -58,7 +58,7 @@ export async function publishToQueue(message) {
     const queueArgs = {
       durable: true,
       "dead-letter-exchange": DQUEUE_EXCHANGE || "dead_letter_exchange",
-      // updated `x-dead-letter-exchange` to `dead-letter-exchange`. So that the policy won't dynamically modify the queue settings at runtime.
+      // updated `x-dead-letter-exchange` to `dead-letter-exchange`.
     };
     let assertSuccess = false;
     for (let i = 0; i < QUEUE_ASSERT_RETRY_ATTEMPTS; i++) {
