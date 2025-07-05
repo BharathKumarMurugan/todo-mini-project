@@ -2,16 +2,22 @@ import json
 import os
 import sys
 import pika
+import time
+import pika.exceptions
 from bson.objectid import ObjectId
 from pymongo.errors import PyMongoError
 from .db import close_mongo_connection, get_mongo_connection
 from .logger import logger
 
-QUEUE_HOST = os.getenv("QUEUE_HOST", "localhost")
-QUEUE_NAME = os.getenv("QUEUE_NAME", "task_queue")
+QUEUE_HOST = os.getenv("QUEUE_HOST", "rabbitmq")
+QUEUE_NAME = os.getenv("QUEUE_NAME", "taskqueue")
 DQUEUE_NAME = os.getenv("DQUEUE_NAME", "dead_letter_queue")
 DQUEUE_EXCHANGE = os.getenv("DQUEUE_EXCHANGE", "dead_letter_exchange")
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", 5))
+
+# Connection retry parameters
+RABBITMQ_RETRY_ATTEMPTS = int(os.getenv("RABBITMQ_RETRY_ATTEMPTS", 10))
+RABBITMQ_RETRY_DELAY_SECONDS = int(os.getenv("RABBITMQ_RETRY_DELAY_SECONDS", 5))
 
 def main():
     """
@@ -33,23 +39,38 @@ def main():
     logger.info(f"Attempt to connect to Rabbitmq")
     connection = None
     channel = None
-    try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host=QUEUE_HOST))
-        channel = connection.channel()
-        
-        logger.info("Connected to RabbitMQ")
 
+    # Retry logic for rabbitmq connection
+    for attempt in range(RABBITMQ_RETRY_ATTEMPTS):
+        logger.info(f"Attempting to connect to RabbitMQ at {QUEUE_HOST} (Attempt {attempt + 1}/{RABBITMQ_RETRY_ATTEMPTS})")
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host=QUEUE_HOST))
+            channel = connection.channel()
+            logger.info("Connected to RabbitMQ")
+            break
+        except pika.exceptions.AMQPConnectionError as err:
+            logger.warning(f"RabbitMQ connection failed: {err}. Retrying in {RABBITMQ_RETRY_DELAY_SECONDS} seconds...")
+            time.sleep(RABBITMQ_RETRY_DELAY_SECONDS)
+        except Exception as err:
+            logger.error(f"An unexpected error occurred during RabbitMQ connection attempt: {err}", exc_info=True)
+            sys.exit(1)
+    else:
+        logger.error(f"Failed to connect to RabbitMQ after {RABBITMQ_RETRY_ATTEMPTS} attempts. Exiting...")
+        sys.exit(1)
+
+            
+    try:
         # Declare the dead letter queue
-        channel.exchange_declare(exchange=DQUEUE_EXCHANGE, exchange_type='fanout', durable=False)
-        channel.queue_declare(queue=DQUEUE_NAME, durable=False)
+        channel.exchange_declare(exchange=DQUEUE_EXCHANGE, exchange_type='fanout', durable=True)
+        channel.queue_declare(queue=DQUEUE_NAME, durable=True)
         channel.queue_bind(exchange=DQUEUE_EXCHANGE, queue=DQUEUE_NAME)
         logger.info(f"Declared Dead Letter Queue: {DQUEUE_NAME} with exchange: {DQUEUE_EXCHANGE}")
         
         # Declare the main queue
         args = {
-            "x-dead-letter-exchange": DQUEUE_EXCHANGE,
+            "dead-letter-exchange": DQUEUE_EXCHANGE,
         }
-        channel.queue_declare(queue=QUEUE_NAME, durable=False, arguments=args )
+        channel.queue_declare(queue=QUEUE_NAME, durable=True, arguments=args )
         logger.info(f"Declared Main Queue: {QUEUE_NAME} with dead-lettering arguments")
 
         def callback(ch, method, properties, body):
