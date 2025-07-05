@@ -4,4 +4,4 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 EXPOSE 3001
-CMD ["python", "run.py"]
+CMD sh -c "sleep 20 && python run.py"
