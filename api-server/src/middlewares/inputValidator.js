@@ -1,19 +1,31 @@
 export default function inputvalidator(req, res, next) {
-  const { title, description, status } = req.body;
+  const { task } = req.body;
 
-  if (!title || typeof title !== String) {
+  if (!task) {
     return res.status(400).json({
-      error: "Title is required and must be a string",
+      error: "Invalid input",
+      message: "Request body must contain a 'task' object.",
     });
   }
-  if (!description || typeof description !== String) {
+
+  const { title, description, status } = task;
+
+  if (!title || typeof title !== "string" || title.trim() === "") {
     return res.status(400).json({
-      error: "Description is required and must be a string",
+      error: "Validation failed",
+      message: "Title is required and must be a non-empty string.",
     });
   }
-  if (status && ["pending", "in-progress", "completed"].includes(status)) {
+  if (!description || typeof description !== "string" || description.trim() === "") {
     return res.status(400).json({
-      error: "Invalid status",
+      error: "Validation failed",
+      message: "Description is required and must be a non-empty string.",
+    });
+  }
+  if (status && !["pending", "in-progress", "completed"].includes(status)) {
+    return res.status(400).json({
+      error: "Validation failed",
+      message: "Invalid status. Must be 'pending', 'in-progress', or 'completed'.",
     });
   }
   next();
