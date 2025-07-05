@@ -3,12 +3,12 @@ import logger from "../utils/logger.js";
 
 export const createTodo = async (req, res) => {
   try {
-    const result = await queueNewTodo(req.body, req.user);
+    const result = await queueNewTodo(req.body.task, req.user);
     res.status(202).json({
       status: "success",
-      taskId: result.taskId,
+      taskId: result.messageId,
     });
-    logger.info("Todo created successfully: ", result.taskId);
+    logger.info("Todo created successfully: ", result.messageId);
   } catch (err) {
     logger.error("Error creating todo:", err);
     res.status(500).json({
@@ -19,12 +19,12 @@ export const createTodo = async (req, res) => {
 
 export const updateTodo = async (req, res) => {
   try {
-    const result = await queueUpdateTodo(req.params.id, req.body, req.user);
+    const result = await queueUpdateTodo(req.params.id, req.body.task, req.user);
     res.status(202).json({
       status: "success",
-      taskId: result.taskId,
+      taskId: result.messageId,
     });
-    logger.info("Todo updated successfully:", result.taskId);
+    logger.info(`Todo updated successfully ID: ${req.params.id}, messageId: ${result.messageId}`);
   } catch (err) {
     logger.error("Error updating todo:", err);
     res.status(500).json({
@@ -38,9 +38,9 @@ export const deleteTodo = async (req, res) => {
     const result = await queueDeleteTodo(req.params.id, req.user);
     res.status(202).json({
       status: "success",
-      taskId: result.taskId,
+      taskId: result.messageId,
     });
-    logger.info("Todo deleted successfully:", result.taskId);
+    logger.info(`Todo deleted successfully ID: ${req.params.id}, messageId: ${result.messageId}`);
   } catch (err) {
     logger.error("Error deleting todo:", err);
     res.status(500).json({
@@ -51,12 +51,12 @@ export const deleteTodo = async (req, res) => {
 
 export const getAllTodos = async (req, res) => {
   try {
-    const result = await getTodos(req.user);
+    const todos = await getTodos(req.user);
     res.status(200).json({
       status: "success",
-      todos: result.todos,
+      todos: todos,
     });
-    logger.info("Todos retrieved successfully:", result, result.todos.length);
+    logger.info(`Todos retrieved successfully for user: ${req.user.id}, count :${todos.length}`);
   } catch (err) {
     logger.error("Error retrieving todos:", err);
     res.status(500).json({
@@ -67,17 +67,17 @@ export const getAllTodos = async (req, res) => {
 
 export const getOneTodoById = async (req, res) => {
   try {
-    const result = await getTodoById(req.params.id, req.user);
-    if (!result) {
+    const todo = await getTodoById(req.params.id, req.user);
+    if (!todo) {
       res.status(404).json({
         status: "Not found",
       });
     }
     res.status(200).json({
       status: "success",
-      todos: result.todos,
+      todo: todo,
     });
-    logger.info("Todo retrieved successfully:", result);
+    logger.info("Todo retrieved successfully:", todo);
   } catch (err) {
     logger.error("Error retrieving todo:", err);
     res.status(500).json({
