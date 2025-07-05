@@ -28,19 +28,19 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
 
 ## 🛠️ Tech Stack
 
-| Component        | Tool/Tech Used                   |
-|------------------|----------------------------------|
-| API Server       | Node.js + Express.js             |
-| Queue System     | RabbitMQ                         |
-| Worker           | Python                           |
-| Database         | MongoDB                          |
-| Load Balancer    | NGINX                            |
-| Authentication   | Simple custom token-based auth   |
-| Logging          | ELK Stack (Elasticsearch + Logstash + Kibana) *(or EFK: Fluentd instead of Logstash)* |
-| Monitoring       | Prometheus + Grafana *(optional)* |
-| Rate Limiting    | `express-rate-limit` (Node.js)   |
-| Health Checks    | `/api/health` endpoint           |
-| Retry Mechanism  | Built into worker logic (manual retry w/ backoff) |
+| Component       | Tool/Tech Used                                                                        |
+| --------------- | ------------------------------------------------------------------------------------- |
+| API Server      | Node.js + Express.js                                                                  |
+| Queue System    | RabbitMQ                                                                              |
+| Worker          | Python                                                                                |
+| Database        | MongoDB                                                                               |
+| Load Balancer   | NGINX                                                                                 |
+| Authentication  | Simple custom token-based auth                                                        |
+| Logging         | ELK Stack (Elasticsearch + Logstash + Kibana) _(or EFK: Fluentd instead of Logstash)_ |
+| Monitoring      | Prometheus + Grafana _(optional)_                                                     |
+| Rate Limiting   | `express-rate-limit` (Node.js)                                                        |
+| Health Checks   | `/api/health` endpoint                                                                |
+| Retry Mechanism | Built into worker logic (manual retry w/ backoff)                                     |
 
 ---
 
@@ -48,21 +48,21 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
 
 ### Task Management APIs
 
-| Method | Endpoint                | Description                          |
-|--------|-------------------------|--------------------------------------|
-| `POST`    | `/api/todos`             | Create a new task (queued)           |
-| `GET`     | `/api/todos`             | Fetch all tasks                      |
-| `GET`     | `/api/todos/:id`         | Fetch task by ID                     |
-| `PUT`     | `/api/todos/:id`         | Update task details                  |
-| `PATCH`   | `/api/todos/:id/status`  | Update only task status              |
-| `DELETE`  | `/api/todos/:id`         | Delete a task                        |
+| Method   | Endpoint                | Description                |
+| -------- | ----------------------- | -------------------------- |
+| `POST`   | `/api/todos`            | Create a new task (queued) |
+| `GET`    | `/api/todos`            | Fetch all tasks            |
+| `GET`    | `/api/todos/:id`        | Fetch task by ID           |
+| `PUT`    | `/api/todos/:id`        | Update task details        |
+| `PATCH`  | `/api/todos/:id/status` | Update only task status    |
+| `DELETE` | `/api/todos/:id`        | Delete a task              |
 
 ### System APIs
 
-| Method | Endpoint         | Description               |
-|--------|------------------|---------------------------|
-| `GET`  | `/api/health`    | Returns system health     |
-| `GET`  | `/api/metrics` *(optional)* | System metrics/logs    |
+| Method | Endpoint                    | Description           |
+| ------ | --------------------------- | --------------------- |
+| `GET`  | `/api/health`               | Returns system health |
+| `GET`  | `/api/metrics` _(optional)_ | System metrics/logs   |
 
 ---
 
@@ -176,15 +176,27 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
 
 ```json
 {
-  "id": "abc123",
-  "title": "Buy groceries",
-  "description": "Milk, bread, eggs",
-  "dueDate": "2025-06-06T18:00:00Z",
-  "status": "pending"
+  "_id": "6864da8eff18e043b6a9d2b5",
+  "task": {
+    "title": "Task 1",
+    "description": "This is the first task",
+    "dueDate": "2025-07-03T04:23:44.370Z",
+    "status": "pending"
+  },
+  "user": {
+    "userId": "user1",
+    "email": "user1@test.com"
+  },
+  "metadata": {
+    "messageId": "uuid-user1-123",
+    "createdAt": "2025-06-30T04:24:46.370Z",
+    "source": "api-server"
+  }
 }
 ```
 
 ### `PUT /api/todos/:id`
+
 ```json
 [
   {
@@ -229,6 +241,7 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
 ```
 
 ### `DELETE /api/todos/:id`
+
 ```json
 {
   "action": "delete",
@@ -255,20 +268,10 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
 
 ## 🧪 Future Enhancements (Optional)
 
-- Retry & Dead Letter Queue for failed tasks
-- WebSocket or polling to show real-time task processing
-- JWT-based authentication or OAuth integration
-- UI with React or Vue.js
-- RBAC/Permissions
-
----
-
-## 📌 Notes
-
-- All write operations (`POST`, `PUT`, `DELETE`) are **queued** and processed asynchronously by a Python worker.
-- The worker directly interacts with the database and logs processing events.
-- The client receives a **confirmation of queuing**, not immediate DB result.
-- Monitoring and logging are essential to understand system behavior.
+- A separate authentication service.
+- WebSocket or polling to show real-time task processing.
+- Use a user database to store user details.
+- Use redis cache to store frequently access data.
 
 ---
 
