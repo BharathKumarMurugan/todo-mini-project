@@ -276,3 +276,59 @@ This is a proof-of-concept (POC) **ToDo application** built using modern open-so
 ---
 
 > 👨‍💻 This project is built for learning purposes and can be extended into a production-grade app with additional tooling, scaling, and security layers.
+
+## Local Setup
+
+use the below `.env` format to run the application locally.
+
+`.env` for API-server
+
+```
+# api-server/.env
+
+# Express APP
+API_PORT=3000
+API_HOST=localhost
+API_BASE_URL=http://localhost:3000/api
+
+# QUEUE server
+QUEUE_URL=amqp://rabbitmq
+QUEUE_NAME=taskqueue
+DQUEUE_NAME=dead_letter_queue
+DQUEUE_EXCHANGE=dead_letter_exchange
+
+# MongoDB
+MONGODB_PORT=27017
+MONGODB_URI=mongodb://mongodb:27017/todo-app
+MONGODB_DATABASE=todo-app
+
+# JWT Auth Token
+AUTH_TOKEN=paste your token here
+
+# Application Environment
+NODE_ENV=development
+```
+
+`.env` for Worker node
+
+```
+# worker-node/.env
+
+# Flask APP
+WORKER_NODE_PORT=3001
+WORKER_NODE_HOST=localhost
+
+# QUEUE Server
+QUEUE_URL=amqp://rabbitmq
+QUEUE_HOST=localhost
+QUEUE_NAME=taskqueue
+DQUEUE_NAME=dead_letter_queue
+DQUEUE_EXCHANGE=dead_letter_exchange
+MAX_RETRIES=5
+
+# MongoDB
+MONGODB_PORT=27017
+MONGODB_URI=mongodb://mongodb:27017/todo-app
+MONGODB_DATABASE=todo-app
+MONGODB_COLLECTION=tasks
+```
