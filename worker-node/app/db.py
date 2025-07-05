@@ -6,7 +6,7 @@ from pymongo.errors import ConnectionFailure, PyMongoError
 
 from .logger import logger
 
-MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/todo-app")
+MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://mongodb:27017/todo-app")
 MONGODB_DATABASE = os.getenv("MONGODB_DATABASE", "todo-app")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION", "tasks")
 
