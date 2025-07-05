@@ -8,15 +8,19 @@ import { v4 as uuidv4 } from "uuid";
 import todoModel from "../models/Todo.js";
 
 export const queueNewTodo = async (taskData, user) => {
+  const messageId = uuidv4();
   const message = {
     action: "create",
-    task: taskData,
+    task: {
+      ...taskData,
+      // userId: user.id
+    },
     user: {
       userId: user.id,
       email: user.email,
     },
     metadata: {
-      messageId: uuidv4(),
+      messageId: messageId,
       createdAt: new Date().toISOString(),
       source: "api-server",
     },
@@ -25,21 +29,25 @@ export const queueNewTodo = async (taskData, user) => {
   return {
     status: "success",
     message: "Task queued successfully",
-    taskId: taskData.id,
+    messageId: messageId,
   };
 };
 
 export const queueUpdateTodo = async (taskId, updatedTask, user) => {
+  const messageId = uuidv4();
   const message = {
     action: "update",
-    taskId,
-    updatedTask,
+    _id: taskId,
+    task: {
+      ...updatedTask,
+      // userId: user.id
+    },
     user: {
       userId: user.id,
       email: user.email,
     },
     metadata: {
-      messageId: uuidv4(),
+      messageId: messageId,
       createdAt: new Date().toISOString(),
       source: "api-server",
     },
@@ -48,20 +56,21 @@ export const queueUpdateTodo = async (taskId, updatedTask, user) => {
   return {
     status: "success",
     message: "Task queued successfully",
-    taskId: taskData.id,
+    messageId: messageId,
   };
 };
 
 export const queueDeleteTodo = async (taskId, user) => {
+  const messageId = uuidv4();
   const message = {
     action: "delete",
-    taskId,
+    _id: taskId,
     user: {
       userId: user.id,
       email: user.email,
     },
     metadata: {
-      messageId: uuidv4(),
+      messageId: messageId,
       createdAt: new Date().toISOString(),
       source: "api-server",
     },
@@ -70,7 +79,7 @@ export const queueDeleteTodo = async (taskId, user) => {
   return {
     status: "success",
     message: "Task queued successfully",
-    taskId: taskData.id,
+    messageId: messageId,
   };
 };
 
@@ -79,5 +88,5 @@ export const getTodos = async (user) => {
 };
 
 export const getTodoById = async (taskId, user) => {
-  return await todoModel.findById(taskId, { userId: user.id }).exec();
+  return await todoModel.findById({ _id: taskId, userId: user.id }).exec();
 };
