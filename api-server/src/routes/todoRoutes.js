@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.get("/", authenticate, getAllTodos);
 router.get("/:id", authenticate, getOneTodoById);
-router.put("/:id", authenticate, updateTodo);
+router.put("/:id", authenticate, inputvalidator, updateTodo);
 router.post("/", authenticate, inputvalidator, createTodo);
-router.delete("/:id", authenticate, inputvalidator, deleteTodo);
+router.delete("/:id", authenticate, deleteTodo);
 
 export default router;
