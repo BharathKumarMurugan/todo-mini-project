@@ -4,15 +4,34 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - rabbitmq
-      - mongodb
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    restart: always
+
+  worker:
+    build: ./worker-node
+    ports:
+      - "3001:3001"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
     restart: always
 
   rabbitmq:
-    image: "rabbitmq:3-management"
+    image: "rabbitmq:3-management-alpine"
     ports:
       - "15672:15672" # Management UI
       - "5672:5672" # default RabbitMQ port
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
 
   mongodb:
     image: "mongo:latest"
