@@ -5,10 +5,12 @@ const todoSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     dueDate: Date,
     status: {
@@ -19,6 +21,7 @@ const todoSchema = new mongoose.Schema(
     userId: {
       type: String,
       required: true,
+      index: true,
     },
   },
   {
