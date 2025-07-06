@@ -8,6 +8,8 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+    volumes:
+      - ./api-server/logs:/app/logs
     restart: always
 
   worker:
@@ -19,6 +21,8 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+    volumes:
+      - ./worker-node/logs:/app/logs
     restart: always
 
   rabbitmq:
@@ -40,11 +44,24 @@ services:
       - "27017:27017"
     volumes:
       - ./mongodb/data:/data/db
+      - ./mongodb/logs:/var/log/mongodb
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh mongodb:27017/test --quiet
       interval: 10s
       timeout: 10s
       retries: 5
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      api-server:
+        condition: service_started
     restart: always
 
 networks:
