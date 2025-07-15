@@ -84,9 +84,9 @@ export const queueDeleteTodo = async (taskId, user) => {
 };
 
 export const getTodos = async (user) => {
-  return await todoModel.find({ userId: user.id }).exec();
+  return await todoModel.find({ 'user.userId': user.id }).exec();
 };
 
 export const getTodoById = async (taskId, user) => {
-  return await todoModel.findById({ _id: taskId, userId: user.id }).exec();
+  return await todoModel.findById({ _id: taskId, 'user.userId': user.id }).exec();
 };
