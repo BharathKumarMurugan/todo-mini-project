@@ -26,6 +26,7 @@ const todoSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // automatically adds createdAt and updatedAt fields
+    collection: "tasks",
   }
 );
 
